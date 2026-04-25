@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Client, Flag, FLAG_CONFIG } from "./types"
 import { Badge, FilterBar } from "./components"
-import { ThreadCard } from "./ThreadCard"
+import { ThreadCard } from "./Threadcard"
 
 interface Props {
   client: Client
