@@ -9,6 +9,7 @@ dist
 !env.example
 data
 weekly_report.json
+!data/weekly_report.json
 __pycache__
 *.pyc
 .venv
