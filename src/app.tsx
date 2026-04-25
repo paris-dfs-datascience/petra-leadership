@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { WeeklyReport, Flag, FLAG_CONFIG } from "./types"
-import { ClientRow } from "./ClientRow"
-import { ClientDetail } from "./ClientDetail"
+import { ClientRow } from "./clientrow"
+import { ClientDetail } from "./Clientdetail"
 import { SAMPLE_DATA } from "./sampleData"
 
 type FilterValue = "all" | Flag
