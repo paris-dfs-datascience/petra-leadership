@@ -91,6 +91,35 @@ az containerapp create --name petra-leadership --resource-group PET-RG-03 --envi
 
 ---
 
+## Temporary Access Lockdown
+
+The dashboard ingress is `external`, so anyone with the URL can load it. Until Microsoft Entra (Azure AD) authentication is in place, use these to flip public access off between demos.
+
+The FQDN is preserved across off/on cycles — same URL works after re-enabling.
+
+### Lock down (no public access)
+```powershell
+az containerapp ingress disable --name petra-leadership --resource-group PET-RG-03
+```
+After this, the public URL returns 404 / unreachable. The revision keeps running but nothing on the internet can hit it.
+
+### Re-open for a demo
+```powershell
+az containerapp ingress enable --name petra-leadership --resource-group PET-RG-03 --type external --target-port 8080 --transport auto
+```
+Allow ~30 seconds after running before refreshing the browser (cold start from `min-replicas=0`).
+
+### Verify state
+```powershell
+az containerapp show --name petra-leadership --resource-group PET-RG-03 --query "properties.configuration.ingress" -o json
+```
+- Locked: returns `null`
+- Open: returns `{ "external": true, "fqdn": "petra-leadership.politewave-...", ... }`
+
+This is a stopgap. The durable fix is Microsoft Entra auth (see Notes below).
+
+---
+
 ## ACR Authentication
 
 The Container App pulls from ACR using admin credentials (managed identity is blocked by tenant permissions, same as Petra Vision).
