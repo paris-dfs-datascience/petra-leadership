@@ -13,6 +13,7 @@ services:
     volumes:
       # Drop a weekly_report.json in ./data to have the UI fetch real data.
       - ./data:/usr/share/nginx/data:ro
+    command: sh -c "echo ''; echo '  ➜  Local:   http://localhost:8080'; echo ''; nginx -g 'daemon off;'"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
       interval: 10s
