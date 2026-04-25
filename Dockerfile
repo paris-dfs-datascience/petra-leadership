@@ -13,7 +13,7 @@ COPY src ./src
 
 # VITE_REPORT_URL is baked in at build time. Leave empty to use SAMPLE_DATA,
 # or pass a blob URL / reverse-proxied path (e.g. /weekly_report.json).
-ARG VITE_REPORT_URL="/weekly_report.json"
+ARG VITE_REPORT_URL="data/weekly_report.json"
 ENV VITE_REPORT_URL=$VITE_REPORT_URL
 
 RUN npm run build
