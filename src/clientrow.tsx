@@ -1,14 +1,18 @@
 import { useState } from "react"
-import { Client } from "./types"
-import { Badge } from "./components"
+import { Client, FLAG_CONFIG } from "./types"
 
 interface Props {
   client: Client
+  active: boolean
   onClick: () => void
 }
 
-export function ClientRow({ client, onClick }: Props) {
+export function ClientRow({ client, active, onClick }: Props) {
   const [hovered, setHovered] = useState(false)
+  const flagCfg = FLAG_CONFIG[client.flag]
+
+  const background = active ? "#fff" : hovered ? "#F3F4F6" : "transparent"
+  const border = active ? "#E5E7EB" : "transparent"
 
   return (
     <div
@@ -16,43 +20,88 @@ export function ClientRow({ client, onClick }: Props) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
-        borderRadius: 12, border: `1px solid ${hovered ? "#E5E7EB" : "#F3F4F6"}`,
-        background: "#fff", cursor: "pointer",
-        boxShadow: hovered ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
-        marginBottom: 8, transition: "all 0.15s"
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 10px",
+        borderRadius: 8,
+        border: `1px solid ${border}`,
+        background,
+        cursor: "pointer",
+        marginBottom: 2,
+        transition: "background 0.12s",
+        boxShadow: active ? "0 1px 2px rgba(0,0,0,0.04)" : "none",
       }}
     >
-      <div style={{ width: 38, height: 38, borderRadius: 9, background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 13, color: "#374151", flexShrink: 0 }}>
-        {client.client_name.slice(0, 2).toUpperCase()}
-      </div>
+      <span
+        title={flagCfg.label}
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          background: flagCfg.color,
+          flexShrink: 0,
+        }}
+      />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{client.client_name}</span>
-          <Badge flag={client.flag} />
+        <div style={{
+          fontSize: 13,
+          fontWeight: active ? 600 : 500,
+          color: "#111",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}>
+          {client.client_name}
         </div>
-        <span style={{ fontSize: 12, color: "#9CA3AF" }}>{client.domain}</span>
-      </div>
-
-      <div style={{ display: "flex", gap: 20, flexShrink: 0 }}>
-        {([
-          { val: client.issue_count, label: "Issues", color: client.issue_count > 0 ? "#DC2626" : "#9CA3AF" },
-          { val: client.fyi_count,   label: "FYI",    color: client.fyi_count   > 0 ? "#D97706" : "#9CA3AF" },
-          { val: client.total_emails, label: "Emails", color: "#9CA3AF" },
-        ] as const).map(m => (
-          <div key={m.label} style={{ textAlign: "center" }}>
-            <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: m.color }}>{m.val}</p>
-            <p style={{ margin: 0, fontSize: 10, color: "#9CA3AF" }}>{m.label}</p>
-          </div>
-        ))}
-        <div style={{ textAlign: "center", minWidth: 72 }}>
-          <p style={{ margin: 0, fontSize: 12, color: "#9CA3AF" }}>{client.last_activity}</p>
-          <p style={{ margin: 0, fontSize: 10, color: "#9CA3AF" }}>Last active</p>
+        <div style={{
+          fontSize: 11,
+          color: "#9CA3AF",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}>
+          {client.domain}
         </div>
       </div>
 
-      <span style={{ color: "#D1D5DB", fontSize: 18 }}>›</span>
+      <div style={{ display: "flex", gap: 6, flexShrink: 0, alignItems: "center" }}>
+        {client.issue_count > 0 && (
+          <Pill color={FLAG_CONFIG.issue.color} bg={FLAG_CONFIG.issue.bg} border={FLAG_CONFIG.issue.border}>
+            {client.issue_count}
+          </Pill>
+        )}
+        {client.fyi_count > 0 && (
+          <Pill color={FLAG_CONFIG.fyi.color} bg={FLAG_CONFIG.fyi.bg} border={FLAG_CONFIG.fyi.border}>
+            {client.fyi_count}
+          </Pill>
+        )}
+        <span style={{ fontSize: 11, color: "#9CA3AF" }}>{client.total_emails}</span>
+      </div>
     </div>
+  )
+}
+
+function Pill({ color, bg, border, children }: {
+  color: string
+  bg: string
+  border: string
+  children: React.ReactNode
+}) {
+  return (
+    <span style={{
+      fontSize: 10,
+      fontWeight: 600,
+      padding: "1px 6px",
+      borderRadius: 10,
+      color,
+      background: bg,
+      border: `1px solid ${border}`,
+      minWidth: 18,
+      textAlign: "center",
+    }}>
+      {children}
+    </span>
   )
 }

@@ -1,2 +1,11 @@
 .env
+.env.local
 weekly_report.json
+node_modules
+dist
+.DS_Store
+__pycache__
+*.pyc
+.venv
+venv
+data/weekly_report.json

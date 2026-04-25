@@ -5,10 +5,9 @@ import { ThreadCard } from "./ThreadCard"
 
 interface Props {
   client: Client
-  onBack: () => void
 }
 
-export function ClientDetail({ client, onBack }: Props) {
+export function ClientDetail({ client }: Props) {
   const [filter, setFilter] = useState<"all" | Flag>("all")
   const allThreads = [...client.issues, ...client.fyi, ...client.routine]
   const filtered = filter === "all" ? allThreads : allThreads.filter(t => t.flag === filter)
@@ -22,13 +21,6 @@ export function ClientDetail({ client, onBack }: Props) {
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#6B7280", padding: "0 0 20px", display: "flex", alignItems: "center", gap: 4 }}
-      >
-        ← Back to all clients
-      </button>
-
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
         <div style={{ width: 44, height: 44, borderRadius: 10, background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 16, color: "#374151" }}>
           {client.client_name.slice(0, 2).toUpperCase()}

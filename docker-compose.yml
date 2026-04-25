@@ -1,0 +1,55 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Leave empty to use SAMPLE_DATA. Set to /weekly_report.json to fetch
+        # the file mounted into ./data (see volume below).
+        VITE_REPORT_URL: ${VITE_REPORT_URL:-/weekly_report.json}
+    image: petra-web:local
+    ports:
+      - "8080:8080"
+    volumes:
+      # Drop a weekly_report.json in ./data to have the UI fetch real data.
+      - ./data:/usr/share/nginx/data:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Optional: run Python batch jobs locally against the same env.
+  # `docker compose run --rm ingest` or `... analyze` / `classify`.
+  ingest:
+    build:
+      context: .
+      dockerfile: Dockerfile.ingest
+    image: petra-ingest:local
+    env_file:
+      - .env
+    profiles: ["batch"]
+    command: ["python", "ingest.py"]
+
+  analyze:
+    image: petra-ingest:local
+    build:
+      context: .
+      dockerfile: Dockerfile.ingest
+    env_file:
+      - .env
+    profiles: ["batch"]
+    command: ["python", "analyze.py"]
+    volumes:
+      - ./data:/app/out
+    working_dir: /app
+
+  classify:
+    image: petra-ingest:local
+    build:
+      context: .
+      dockerfile: Dockerfile.ingest
+    env_file:
+      - .env
+    profiles: ["batch"]
+    command: ["python", "classify_domains.py"]
