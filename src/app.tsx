@@ -3,7 +3,6 @@ import { WeeklyReport, Flag, FLAG_CONFIG } from "./types"
 import { MetricCard, FilterBar } from "./components"
 import { ClientRow } from "./ClientRow"
 import { ClientDetail } from "./ClientDetail"
-import { SAMPLE_DATA } from "./sampleData"
 
 export default function App() {
   const [data, setData] = useState<WeeklyReport | null>(null)
@@ -13,18 +12,15 @@ export default function App() {
   const [filter, setFilter] = useState<"all" | Flag>("all")
 
   useEffect(() => {
-    const reportUrl = import.meta.env.VITE_REPORT_URL
+    const reportUrl = import.meta.env.VITE_REPORT_URL || "/weekly_report.json"
 
-    if (reportUrl) {
-      fetch(reportUrl)
-        .then(r => r.json())
-        .then((d: WeeklyReport) => { setData(d); setLoading(false) })
-        .catch(err => { setError(err.message); setLoading(false) })
-    } else {
-      // Fall back to sample data in development
-      setData(SAMPLE_DATA)
-      setLoading(false)
-    }
+    fetch(reportUrl)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
+      .then((d: WeeklyReport) => { setData(d); setLoading(false) })
+      .catch(err => { setError(err.message); setLoading(false) })
   }, [])
 
   if (loading) {
